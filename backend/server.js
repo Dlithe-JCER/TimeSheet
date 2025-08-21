@@ -4,11 +4,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
-const weeklyRoutes = require("./routes/weeklyRoutes");
-const weeklyLogRoutes = require("./routes/weeklyLogRoutes"); // ✅ add this
+const weeklyLogRoutes = require("./routes/weeklyLogRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const taskTypeRoutes = require("./routes/taskTypeRoutes");
-const taskRoutes = require("./routes/taskRoutes");
 
 const app = express();
 
@@ -28,16 +26,14 @@ mongoose.connect(process.env.MONGO_URI, {
 require("./models/timeSheetUsers");
 require("./models/Project");
 require("./models/TaskType");
-require("./models/Week");
-require("./models/Task");
+require("./models/WeeklyLog");
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/weeks", weeklyRoutes);
+app.use("/api/users", authRoutes); // Assuming you want to use the same auth routes for user management
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasktypes", taskTypeRoutes);
-app.use("/api/tasks", taskRoutes);
-app.use("/api/weeklylogs", weeklyLogRoutes); // ✅ mount weekly logs route
+app.use("/api/weeklylogs", weeklyLogRoutes);
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

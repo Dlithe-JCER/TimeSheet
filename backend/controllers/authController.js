@@ -61,6 +61,16 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+// Get All Users
+exports.getUsers = async (req, res) => {
+    try {
+        const users = await User.find().select("-password -resetCode -resetCodeExpiry");
+        // Exclude sensitive fields
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 
 // Forgot Password
 exports.forgotPassword = async (req, res) => {

@@ -4,61 +4,80 @@ import { LoginPage } from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import HomePage from "./components/pages/HomePage";
-import LandingPage from "./components/LandingPage"
+import LandingPage from "./components/LandingPage";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import ProtectedRoute from "./components/useContext/ProtectedRoute";
+import { UserProvider } from "./components/useContext/UserContext"
+import ManageProjects from "./components/admin/ManageProjects";
+import ManageUsers from "./components/admin/ManageUsers";
+import ViewTimeSheet from "./components/admin/ViewTimeSheet";
 function App() {
   const [resetEmail, setResetEmail] = useState("");
 
   return (
-    <Router>
-      <Routes>
-        {/* Login Page */}
-        <Route
-          path="/login"
-          element={
-            <LoginPage
-              onForgotPassword={() => {
-                // Navigate handled inside LoginPage using useNavigate
-              }}
-            />
-          }
-        />
-        <Route
-          path="/"
-          element={<LandingPage />}
-        />
-        {/* Forgot Password */}
-        <Route
-          path="/forgot"
-          element={
-            <ForgotPassword
-              onBack={() => {
-                // Navigate handled inside ForgotPassword using useNavigate
-              }}
-              onCodeSent={(email) => {
-                setResetEmail(email);
-                // Navigate handled inside ForgotPassword
-              }}
-            />
-          }
-        />
+    <UserProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/forgot"
+            element={
+              <ForgotPassword
+                onCodeSent={(email) => setResetEmail(email)}
+              />
+            }
+          />
+          <Route
+            path="/reset"
+            element={<ResetPassword email={resetEmail} />}
+          />
 
-        {/* Reset Password */}
-        <Route
-          path="/reset"
-          element={
-            <ResetPassword
-              email={resetEmail}
-              onBack={() => {
-                // Navigate handled inside ResetPassword using useNavigate
-              }}
-            />
-          }
-        />
-
-        {/* After Login → Homepage */}
-        <Route path="/homepage" element={<HomePage />} />
-      </Routes>
-    </Router>
+          {/* Protected Routes */}
+          <Route
+            path="/homepage"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/projects"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <ManageProjects />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/user"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <ManageUsers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/timesheets"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <ViewTimeSheet />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 

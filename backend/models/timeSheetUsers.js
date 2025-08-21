@@ -7,14 +7,14 @@ const userSchema = new mongoose.Schema(
         employeeId: { type: String, required: true, unique: true, trim: true },
         email: { type: String, required: true, unique: true, lowercase: true, trim: true },
         password: { type: String, required: true, minlength: 6 },
-        role: { type: String, enum: ["employee", "manager"], default: "employee" },
+        role: { type: String, enum: ["employee", "manager", "admin"], default: "employee" },
         resetCode: { type: String },
         resetCodeExpiry: { type: Date }
     },
     { timestamps: true }
 );
 
-// Hash password before save (only if changed)
+// Hash password
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     try {

@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "./useContext/UserContext"; // adjust import path
 
-export function LoginPage({ onForgotPassword }) {
+export function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const { setUser } = useUser();  // 👈 get setUser from context
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -20,15 +22,25 @@ export function LoginPage({ onForgotPassword }) {
 
             if (res.ok) {
                 alert("Login success ✅");
-                // store full user details
+
+                // store user + token in localStorage
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
-                navigate("/homepage");
+
+                // ✅ update context immediately
+                setUser(data.user);
+
+                // redirect based on role
+                if (data.user.role === "admin") {
+                    navigate("/admin");
+                } else {
+                    navigate("/homepage");
+                }
             } else {
-                alert(data.message || "Login failed");
+                alert(data.message || "Login failed ❌");
             }
         } catch (err) {
-            alert("Error logging in");
+            alert("Error logging in ❌");
             console.error(err);
         }
     };
@@ -65,7 +77,7 @@ export function LoginPage({ onForgotPassword }) {
 
                 <p className="text-gray-500 text-center mt-6 text-sm">
                     <span
-                        onClick={onForgotPassword}
+                        onClick={() => navigate("/forgot")}
                         className="text-blue-500 cursor-pointer hover:underline"
                     >
                         Forgot Password?
