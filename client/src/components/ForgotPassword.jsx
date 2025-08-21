@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import AlertMessage from "./AlertMessage"; // ✅ Import reusable alert
 
 export function ForgotPassword() {
     const [step, setStep] = useState(1); // 1=email, 2=code, 3=new password
     const [email, setEmail] = useState("");
     const [code, setCode] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [alert, setAlert] = useState({ type: "", message: "" }); // ✅ State for alerts
 
     // API base
     const API = "http://localhost:9000/api/auth";
@@ -19,8 +21,13 @@ export function ForgotPassword() {
             body: JSON.stringify({ email }),
         });
         const data = await res.json();
-        alert(data.message);
-        if (res.ok) setStep(2);
+
+        if (res.ok) {
+            setAlert({ type: "success", message: data.message || "Code sent ✅" });
+            setStep(2);
+        } else {
+            setAlert({ type: "error", message: data.message || "Failed to send code ❌" });
+        }
     };
 
     // Verify code
@@ -31,8 +38,13 @@ export function ForgotPassword() {
             body: JSON.stringify({ email, code }),
         });
         const data = await res.json();
-        alert(data.message);
-        if (res.ok) setStep(3);
+
+        if (res.ok) {
+            setAlert({ type: "success", message: data.message || "Code verified ✅" });
+            setStep(3);
+        } else {
+            setAlert({ type: "error", message: data.message || "Invalid code ❌" });
+        }
     };
 
     // Reset password
@@ -43,12 +55,24 @@ export function ForgotPassword() {
             body: JSON.stringify({ email, code, newPassword }),
         });
         const data = await res.json();
-        alert(data.message);
-        if (res.ok) setStep(1); // back to login flow
+
+        if (res.ok) {
+            setAlert({ type: "success", message: data.message || "Password reset ✅" });
+            setStep(1); // back to login flow
+        } else {
+            setAlert({ type: "error", message: data.message || "Failed to reset password ❌" });
+        }
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-black text-white">
+            {/* ✅ Centered Alert */}
+            <AlertMessage
+                type={alert.type}
+                message={alert.message}
+                onClose={() => setAlert({ type: "", message: "" })}
+            />
+
             <div className="bg-gray-900 p-8 rounded-2xl shadow-lg w-full max-w-md">
                 {step === 1 && (
                     <>

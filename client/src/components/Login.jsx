@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "./useContext/UserContext"; // adjust import path
+import { useUser } from "./useContext/UserContext";
+import AlertMessage from "./AlertMessage"; // 👈 import reusable alert
 
 export function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [alert, setAlert] = useState({ type: "", message: "" });
     const navigate = useNavigate();
-    const { setUser } = useUser();  // 👈 get setUser from context
+    const { setUser } = useUser();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -21,32 +23,41 @@ export function LoginPage() {
             const data = await res.json();
 
             if (res.ok) {
-                alert("Login success ✅");
+                setAlert({ type: "success", message: "Login success ✅" });
 
-                // store user + token in localStorage
+                // store user + token
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
 
-                // ✅ update context immediately
+                // update context
                 setUser(data.user);
 
-                // redirect based on role
-                if (data.user.role === "admin") {
-                    navigate("/admin");
-                } else {
-                    navigate("/homepage");
-                }
+                // redirect after 1s delay (so user sees message)
+                setTimeout(() => {
+                    if (data.user.role === "admin") {
+                        navigate("/admin");
+                    } else {
+                        navigate("/homepage");
+                    }
+                }, 1000);
             } else {
-                alert(data.message || "Login failed ❌");
+                setAlert({ type: "error", message: data.message || "Login failed ❌" });
             }
         } catch (err) {
-            alert("Error logging in ❌");
             console.error(err);
+            setAlert({ type: "error", message: "Error logging in ❌" });
         }
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-black text-white">
+            {/* ✅ AlertMessage */}
+            <AlertMessage
+                type={alert.type}
+                message={alert.message}
+                onClose={() => setAlert({ type: "", message: "" })}
+            />
+
             <div className="bg-gray-900 p-10 rounded-2xl shadow-lg w-full max-w-md">
                 <h2 className="text-3xl font-bold mb-6 text-center">Welcome Back</h2>
 

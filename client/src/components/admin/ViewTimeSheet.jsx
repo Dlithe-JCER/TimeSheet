@@ -57,7 +57,6 @@ function ViewTimeSheet() {
         fetch(url)
             .then((res) => res.json())
             .then((data) => {
-                // filter by project on frontend (or adjust backend if needed)
                 const filtered = selectedProject
                     ? data.filter((log) => log.projectId._id === selectedProject)
                     : data;
@@ -65,7 +64,7 @@ function ViewTimeSheet() {
             });
     };
 
-    // ✅ Calculate total hours
+    // ✅ Calculate grand total hours
     const totalHours = logs.reduce((sum, log) => {
         return (
             sum +
@@ -105,7 +104,7 @@ function ViewTimeSheet() {
                     onChange={(e) => setSelectedProject(e.target.value)}
                     className="bg-gray-900 p-2 rounded-lg"
                 >
-                    <option value="">Select Project</option>
+                    <option value="">All Projects</option>
                     {projects.map((p) => (
                         <option key={p._id} value={p._id}>
                             {p.name}
@@ -130,7 +129,7 @@ function ViewTimeSheet() {
                     ))}
                 </select>
 
-                {/* Week Dropdown (depends on month) */}
+                {/* Week Dropdown */}
                 <select
                     value={selectedWeek}
                     onChange={(e) => setSelectedWeek(e.target.value)}
@@ -160,38 +159,100 @@ function ViewTimeSheet() {
                     <p className="text-gray-400">No timesheet logs found.</p>
                 ) : (
                     <>
-                        <table className="w-full border border-gray-700">
-                            <thead>
-                                <tr className="bg-gray-800">
-                                    <th className="p-2">Employee</th>
-                                    <th className="p-2">Project</th>
-                                    <th className="p-2">Task Type</th>
-                                    <th className="p-2">Week</th>
-                                    <th className="p-2">Days</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {logs.map((log) => (
-                                    <tr key={log._id} className="border-b border-gray-700">
-                                        <td className="p-2">{log.userId?.name}</td>
-                                        <td className="p-2">{log.projectId?.name}</td>
-                                        <td className="p-2">{log.taskTypeId?.name}</td>
-                                        <td className="p-2">
-                                            Week {log.weekNumber} ({log.isoYear})
-                                        </td>
-                                        <td className="p-2">
-                                            Mon: {log.days.mon}, Tue: {log.days.tue}, Wed: {log.days.wed}, Thu:{" "}
-                                            {log.days.thu}, Fri: {log.days.fri}, Sat: {log.days.sat}, Sun:{" "}
-                                            {log.days.sun}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        {/* ✅ Group by project if "All Projects" selected */}
+                        {selectedProject === "" ? (
+                            <>
+                                {projects
+                                    .filter((proj) => logs.some((log) => log.projectId?._id === proj._id))
+                                    .map((proj) => {
+                                        const projLogs = logs.filter((log) => log.projectId?._id === proj._id);
 
-                        {/* ✅ Show Total Hours */}
+                                        const projectTotal = projLogs.reduce((sum, log) => {
+                                            return (
+                                                sum +
+                                                (Number(log.days.mon || 0) +
+                                                    Number(log.days.tue || 0) +
+                                                    Number(log.days.wed || 0) +
+                                                    Number(log.days.thu || 0) +
+                                                    Number(log.days.fri || 0) +
+                                                    Number(log.days.sat || 0) +
+                                                    Number(log.days.sun || 0))
+                                            );
+                                        }, 0);
+
+                                        return (
+                                            <div key={proj._id} className="mb-6">
+                                                <h2 className="text-xl font-bold text-green-400 mb-2">
+                                                    Project: {proj.name} (Total Hours: {projectTotal})
+                                                </h2>
+                                                <table className="w-full border border-gray-700">
+                                                    <thead>
+                                                        <tr className="bg-gray-800">
+                                                            <th className="p-2">Employee</th>
+                                                            <th className="p-2">Task Type</th>
+                                                            <th className="p-2">Week</th>
+                                                            <th className="p-2">Days</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {projLogs.map((log) => (
+                                                            <tr key={log._id} className="border-b border-gray-700">
+                                                                <td className="p-2">{log.userId?.name}</td>
+                                                                <td className="p-2">{log.taskTypeId?.name}</td>
+                                                                <td className="p-2">
+                                                                    Week {log.weekNumber} ({log.isoYear})
+                                                                </td>
+                                                                <td className="p-2">
+                                                                    Mon: {log.days.mon}, Tue: {log.days.tue}, Wed:{" "}
+                                                                    {log.days.wed}, Thu: {log.days.thu}, Fri:{" "}
+                                                                    {log.days.fri}, Sat: {log.days.sat}, Sun:{" "}
+                                                                    {log.days.sun}
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        );
+                                    })}
+                            </>
+                        ) : (
+                            <>
+                                {/* ✅ Show single project table */}
+                                <table className="w-full border border-gray-700">
+                                    <thead>
+                                        <tr className="bg-gray-800">
+                                            <th className="p-2">Employee</th>
+                                            <th className="p-2">Project</th>
+                                            <th className="p-2">Task Type</th>
+                                            <th className="p-2">Week</th>
+                                            <th className="p-2">Days</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {logs.map((log) => (
+                                            <tr key={log._id} className="border-b border-gray-700">
+                                                <td className="p-2">{log.userId?.name}</td>
+                                                <td className="p-2">{log.projectId?.name}</td>
+                                                <td className="p-2">{log.taskTypeId?.name}</td>
+                                                <td className="p-2">
+                                                    Week {log.weekNumber} ({log.isoYear})
+                                                </td>
+                                                <td className="p-2">
+                                                    Mon: {log.days.mon}, Tue: {log.days.tue}, Wed: {log.days.wed}, Thu:{" "}
+                                                    {log.days.thu}, Fri: {log.days.fri}, Sat: {log.days.sat}, Sun:{" "}
+                                                    {log.days.sun}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        )}
+
+                        {/* ✅ Show Grand Total Hours */}
                         <div className="mt-4 text-lg font-semibold text-yellow-400">
-                            Total Hours: {totalHours}
+                            Grand Total Hours: {totalHours}
                         </div>
                     </>
                 )}
