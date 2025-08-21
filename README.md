@@ -47,25 +47,25 @@ It allows employees to log weekly working hours on different projects, and admin
 
 ## 📂 Project Structure
 
-timesheet-app/
+timesheet-app/<br/>
 │
-├── backend/
-│ ├── controllers/ # Business logic (auth, projects, timesheets, etc.)
-│ ├── models/ # Mongoose schemas
-│ ├── routes/ # Express routes
-│ ├── server.js # Entry point
-│ └── config/ # DB connection, env setup
+├── backend/<br/>
+│ ├── controllers/ # Business logic (auth, projects, timesheets, etc.)<br/>
+│ ├── models/ # Mongoose schemas<br/>
+│ ├── routes/ # Express routes<br/>
+│ ├── server.js # Entry point<br/>
+│ └── config/ # DB connection, env setup<br/>
 │
-├── frontend/
-│ ├── src/
-│ │ ├── components/ # Reusable UI components
-│ │ ├── pages/ # Main pages (Login, Home, ViewTimeSheet, etc.)
-│ │ └── App.jsx
-│ └── vite.config.js
+├── frontend/<br/>
+│ ├── src/<br/>
+│ │ ├── components/ # Reusable UI components<br/>
+│ │ ├── pages/ # Main pages (Login, Home, ViewTimeSheet, etc.)<br/>
+│ │ └── App.jsx<br/>
+│ └── vite.config.js<br/>
 │
-├── .env # Environment variables
-├── package.json
-└── README.md
+├── .env # Environment variables<br/>
+├── package.json<br/>
+└── README.md<br/>
 
 
 ---
