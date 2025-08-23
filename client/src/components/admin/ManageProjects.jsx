@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { FolderKanban, PlusCircle, Trash2 } from "lucide-react";
+import { FolderKanban, PlusCircle, Trash2, CheckCircle } from "lucide-react";
 import axios from "axios";
 
 function ManageProjects() {
@@ -12,6 +12,9 @@ function ManageProjects() {
         name: "",
         code: "",
         description: "",
+        startDate: "",
+        endDate: "",
+        status: "active",
     });
 
     // Fetch projects
@@ -38,7 +41,14 @@ function ManageProjects() {
         e.preventDefault();
         try {
             await axios.post("http://localhost:9000/api/projects", formData);
-            setFormData({ name: "", code: "", description: "" });
+            setFormData({
+                name: "",
+                code: "",
+                description: "",
+                startDate: "",
+                endDate: "",
+                status: "active",
+            });
             fetchProjects();
         } catch (err) {
             console.error("Error adding project:", err);
@@ -52,6 +62,18 @@ function ManageProjects() {
             fetchProjects();
         } catch (err) {
             console.error("Error deleting project:", err);
+        }
+    };
+
+    // Mark project as done
+    const handleMarkDone = async (id) => {
+        try {
+            await axios.put(`http://localhost:9000/api/projects/${id}`, {
+                status: "done",
+            });
+            fetchProjects();
+        } catch (err) {
+            console.error("Error updating project status:", err);
         }
     };
 
@@ -111,6 +133,46 @@ function ManageProjects() {
                                 className="bg-gray-800 border-gray-700 text-white"
                             />
                         </div>
+
+                        {/* Start Date */}
+                        <div>
+                            <label className="block text-sm text-gray-400 mb-2">Start Date</label>
+                            <Input
+                                type="date"
+                                name="startDate"
+                                value={formData.startDate}
+                                onChange={handleChange}
+                                className="bg-gray-800 border-gray-700 text-white"
+                                required
+                            />
+                        </div>
+
+                        {/* End Date */}
+                        <div>
+                            <label className="block text-sm text-gray-400 mb-2">End Date</label>
+                            <Input
+                                type="date"
+                                name="endDate"
+                                value={formData.endDate}
+                                onChange={handleChange}
+                                className="bg-gray-800 border-gray-700 text-white"
+                            />
+                        </div>
+
+                        {/* Status */}
+                        <div>
+                            <label className="block text-sm text-gray-400 mb-2">Status</label>
+                            <select
+                                name="status"
+                                value={formData.status}
+                                onChange={handleChange}
+                                className="w-full bg-gray-800 border-gray-700 text-white rounded-md px-3 py-2"
+                            >
+                                <option value="active">Active</option>
+                                <option value="done">Done</option>
+                            </select>
+                        </div>
+
                         <div className="md:col-span-2 flex justify-end">
                             <Button
                                 type="submit"
@@ -132,18 +194,45 @@ function ManageProjects() {
                     >
                         <CardHeader>
                             <CardTitle className="flex justify-between items-center">
-                                <span className="text-gray-400">{project.name}</span>
-                                <Trash2
-                                    className="h-5 w-5 text-red-500 cursor-pointer hover:text-red-700"
-                                    onClick={() => handleDelete(project._id)}
-                                />
+                                <span className="text-gray-200 font-semibold">{project.name}</span>
+                                <div className="flex gap-3">
+                                    {project.status !== "done" && (
+                                        <CheckCircle
+                                            className="h-5 w-5 text-green-500 cursor-pointer hover:text-green-700"
+                                            title="Mark as Done"
+                                            onClick={() => handleMarkDone(project._id)}
+                                        />
+                                    )}
+                                    <Trash2
+                                        className="h-5 w-5 text-red-500 cursor-pointer hover:text-red-700"
+                                        onClick={() => handleDelete(project._id)}
+                                    />
+                                </div>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-gray-400 text-sm mb-2">
+                            <p className="text-gray-400 text-sm mb-1">
                                 Code: {project.code || "—"}
                             </p>
-                            <p className="text-gray-300 text-sm">
+                            <p className="text-gray-400 text-sm mb-1">
+                                Status:{" "}
+                                <span
+                                    className={
+                                        project.status === "done"
+                                            ? "text-red-400"
+                                            : "text-green-400"
+                                    }
+                                >
+                                    {project.status}
+                                </span>
+                            </p>
+                            <p className="text-gray-400 text-sm mb-1">
+                                Start: {project.startDate ? new Date(project.startDate).toLocaleDateString() : "—"}
+                            </p>
+                            <p className="text-gray-400 text-sm mb-1">
+                                End: {project.endDate ? new Date(project.endDate).toLocaleDateString() : "—"}
+                            </p>
+                            <p className="text-gray-300 text-sm mt-2">
                                 {project.description || "No description"}
                             </p>
                         </CardContent>
