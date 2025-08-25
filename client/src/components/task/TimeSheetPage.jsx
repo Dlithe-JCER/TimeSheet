@@ -155,6 +155,40 @@ export default function TaskManager() {
       },
     ]);
   };
+  // Fetch logs whenever selectedWeek changes
+  useEffect(() => {
+    const fetchLogsForWeek = async () => {
+      if (!userId || !token || !selectedWeek) return;
+
+      try {
+        const logsRes = await axios.get(
+          `http://localhost:9000/api/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (logsRes.data && logsRes.data.length > 0) {
+          const updatedTasks = logsRes.data.map((log) => ({
+            id: log._id,
+            week: log.weekNumber,
+            projectId: log.projectId?._id || log.projectId,
+            taskTypeId: log.taskTypeId?._id || log.taskTypeId,
+            status: log.status,
+            days: log.days,
+          }));
+          setTasks(updatedTasks);
+        } else {
+          setTasks([]); // No logs for that week
+        }
+      } catch (err) {
+        console.error("Error fetching logs for week:", err);
+        showAlert("error", "Error fetching logs. Please try again.");
+      }
+    };
+
+    fetchLogsForWeek();
+  }, [selectedWeek, userId, token, currentYear]);
 
   const handleRemoveTask = async (taskId) => {
     if (taskId.startsWith("temp-")) {
