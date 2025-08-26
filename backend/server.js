@@ -29,6 +29,10 @@ require("./models/TaskType");
 require("./models/WeeklyLog");
 
 // Routes
+app.get("/", (req, res) => {
+    res.send("✅ API is running...");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", authRoutes); // Assuming you want to use the same auth routes for user management
 app.use("/api/projects", projectRoutes);
