@@ -243,3 +243,24 @@ exports.deleteWeeklyLog = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+// Get ALL logs (admin view)
+// Get ALL logs (admin view)
+exports.getAllWeeklyLogs = async (req, res) => {
+    try {
+        const { isoYear, weekNumber } = req.query;
+        const filter = {};
+
+        if (isoYear) filter.isoYear = parseInt(isoYear);
+        if (weekNumber) filter.weekNumber = parseInt(weekNumber);
+
+        const logs = await WeeklyLog.find(filter)
+            .populate("projectId", "name")
+            .populate("taskTypeId", "name")
+            .populate("userId", "name email employeeId");
+
+        res.json(logs);
+    } catch (err) {
+        console.error("Error getting all weekly logs:", err);
+        res.status(500).json({ message: err.message });
+    }
+};

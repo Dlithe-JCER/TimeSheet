@@ -16,7 +16,7 @@ function ViewTimeSheet() {
             .then((res) => res.json())
             .then((data) => setUsers(data));
 
-        fetch("http://localhost:9000/api/projects")
+        fetch("http://localhost:9000/api/projects/all")
             .then((res) => res.json())
             .then((data) => setProjects(data));
     }, []);
@@ -48,21 +48,29 @@ function ViewTimeSheet() {
 
     // ✅ Fetch logs when filters are applied
     const fetchLogs = () => {
-        if (!selectedUser) return;
+        let url = "";
 
-        let url = `http://localhost:9000/api/weeklylogs/user/${selectedUser}?`;
+        if (selectedUser) {
+            // Employee-specific logs
+            url = `http://localhost:9000/api/weeklylogs/user/${selectedUser}?`;
+        } else {
+            // Admin view - all logs
+            url = `http://localhost:9000/api/weeklylogs/all?`;
+        }
+
         if (selectedWeek) url += `weekNumber=${selectedWeek}&`;
-        if (selectedMonth) url += `isoYear=${new Date().getFullYear()}&`; // keep same year for now
+        if (selectedMonth) url += `isoYear=${new Date().getFullYear()}&`;
 
         fetch(url)
             .then((res) => res.json())
             .then((data) => {
                 const filtered = selectedProject
-                    ? data.filter((log) => log.projectId._id === selectedProject)
+                    ? data.filter((log) => log.projectId?._id === selectedProject)
                     : data;
                 setLogs(filtered);
             });
     };
+
 
     // ✅ Calculate grand total hours
     const totalHours = logs.reduce((sum, log) => {
