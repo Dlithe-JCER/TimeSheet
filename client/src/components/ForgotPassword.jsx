@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import AlertMessage from "./AlertMessage"; // ✅ Import reusable alert
+import AlertMessage from "./AlertMessage"; // ✅ Reusable alert
+
+// Base URL from .env (e.g. VITE_API_BASE_URL=https://timesheet-ldbb.onrender.com/api)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export function ForgotPassword() {
     const [step, setStep] = useState(1); // 1=email, 2=code, 3=new password
     const [email, setEmail] = useState("");
     const [code, setCode] = useState("");
     const [newPassword, setNewPassword] = useState("");
-    const [alert, setAlert] = useState({ type: "", message: "" }); // ✅ State for alerts
-
-    // API base
-
+    const [alert, setAlert] = useState({ type: "", message: "" });
 
     // Send reset code
     const sendCode = async () => {
-        const res = await fetch(`https://timesheet-ldbb.onrender.com/api/forgot-password`, {
+        const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email }),
@@ -32,7 +32,7 @@ export function ForgotPassword() {
 
     // Verify code
     const verifyCode = async () => {
-        const res = await fetch(`${API_BASE_URL}/verify-code`, {
+        const res = await fetch(`${API_BASE_URL}/auth/verify-code`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, code }),
@@ -49,7 +49,7 @@ export function ForgotPassword() {
 
     // Reset password
     const resetPassword = async () => {
-        const res = await fetch(`${API_BASE_URL}/reset-password`, {
+        const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, code, newPassword }),
@@ -125,4 +125,5 @@ export function ForgotPassword() {
         </div>
     );
 }
+
 export default ForgotPassword;
