@@ -15,7 +15,7 @@ export function ForgotPassword() {
 
     // Send reset code
     const sendCode = async () => {
-        const res = await fetch(`${API_BASE_URL}/forgot-password`, {
+        const res = await fetch(`https://timesheet-ldbb.onrender.com/api/forgot-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email }),
