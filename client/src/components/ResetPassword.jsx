@@ -17,7 +17,7 @@ export function ResetPassword({ email }) {
         try {
             // Step 1: Verify code
 
-            const verifyRes = await fetch(`${API_BASE_URL}/auth/verify-code`, {
+            const verifyRes = await fetch(`https://timesheet-ldbb.onrender.com/api/auth/verify-code`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, code }),
@@ -27,7 +27,7 @@ export function ResetPassword({ email }) {
                 setAlert({ type: "error", message: verifyData.message || "Invalid code ❌" });
                 return;
             }
-            const resetRes = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+            const resetRes = await fetch(`https://timesheet-ldbb.onrender.com/api/auth/reset-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, code, newPassword }),
