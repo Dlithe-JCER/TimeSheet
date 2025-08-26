@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import AlertMessage from "./AlertMessage"; // ✅ Import reusable alert
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export function ForgotPassword() {
     const [step, setStep] = useState(1); // 1=email, 2=code, 3=new password
     const [email, setEmail] = useState("");
@@ -11,11 +11,11 @@ export function ForgotPassword() {
     const [alert, setAlert] = useState({ type: "", message: "" }); // ✅ State for alerts
 
     // API base
-    const API = `${API_BASE_URL}/auth`;
+
 
     // Send reset code
     const sendCode = async () => {
-        const res = await fetch(`${API}/forgot-password`, {
+        const res = await fetch(`${API_BASE_URL}/forgot-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email }),
@@ -32,7 +32,7 @@ export function ForgotPassword() {
 
     // Verify code
     const verifyCode = async () => {
-        const res = await fetch(`${API}/verify-code`, {
+        const res = await fetch(`${API_BASE_URL}/verify-code`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, code }),
@@ -49,7 +49,7 @@ export function ForgotPassword() {
 
     // Reset password
     const resetPassword = async () => {
-        const res = await fetch(`${API}/reset-password`, {
+        const res = await fetch(`${API_BASE_URL}/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, code, newPassword }),
