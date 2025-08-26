@@ -9,7 +9,7 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import ProtectedRoute from "./components/useContext/ProtectedRoute";
 import { UserProvider } from "./components/useContext/UserContext"
 import ManageProjects from "./components/admin/ManageProjects";
-import ManageUsers from "./components/admin/ManageUsers";
+// import ManageUsers from "./components/admin/ManageUsers";
 import ViewTimeSheet from "./components/admin/ViewTimeSheet";
 function App() {
   const [resetEmail, setResetEmail] = useState("");
@@ -59,14 +59,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/admin/user"
             element={
               <ProtectedRoute adminOnly={true}>
                 <ManageUsers />
               </ProtectedRoute>
             }
-          />
+          /> */}
           <Route
             path="/admin/timesheets"
             element={

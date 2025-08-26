@@ -3,20 +3,21 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import AlertMessage from "./AlertMessage"; 
+import AlertMessage from "./AlertMessage";
 
 export function ResetPassword({ email }) {
     const [code, setCode] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [alert, setAlert] = useState({ type: "", message: "" });
     const navigate = useNavigate();
-
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const handleReset = async (e) => {
         e.preventDefault();
 
         try {
             // Step 1: Verify code
-            const verifyRes = await fetch("http://localhost:9000/api/auth/verify-code", {
+
+            const verifyRes = await fetch(`${API_BASE_URL}/auth/verify-code`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, code }),
@@ -26,7 +27,7 @@ export function ResetPassword({ email }) {
                 setAlert({ type: "error", message: verifyData.message || "Invalid code ❌" });
                 return;
             }
-            const resetRes = await fetch("http://localhost:9000/api/auth/reset-password", {
+            const resetRes = await fetch(`${API_BASE_URL}/auth/reset-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, code, newPassword }),
@@ -35,7 +36,7 @@ export function ResetPassword({ email }) {
 
             if (resetRes.ok) {
                 setAlert({ type: "success", message: "Password reset successful! ✅ Redirecting..." });
-                setTimeout(() => navigate("/login"), 2000); 
+                setTimeout(() => navigate("/login"), 2000);
             } else {
                 setAlert({ type: "error", message: resetData.message || "Failed to reset password ❌" });
             }
@@ -46,7 +47,7 @@ export function ResetPassword({ email }) {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-black text-white relative">
-      
+
             <Button
                 onClick={() => navigate("/login")}
                 className="absolute top-4 right-4 bg-gray-700 hover:bg-gray-600 text-white"
@@ -54,7 +55,7 @@ export function ResetPassword({ email }) {
                 Go Back
             </Button>
 
-         
+
             <AlertMessage
                 type={alert.type}
                 message={alert.message}

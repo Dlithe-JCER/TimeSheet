@@ -11,7 +11,7 @@ export function ForgotPassword() {
     const [alert, setAlert] = useState({ type: "", message: "" }); // ✅ State for alerts
 
     // API base
-    const API = "http://localhost:9000/api/auth";
+    const API = `${API_BASE_URL}/auth`;
 
     // Send reset code
     const sendCode = async () => {

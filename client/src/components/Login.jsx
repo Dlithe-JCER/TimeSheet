@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "./useContext/UserContext";
 import AlertMessage from "./AlertMessage"; // 👈 import reusable alert
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -14,7 +14,7 @@ export function LoginPage() {
         e.preventDefault();
 
         try {
-            const res = await fetch("http://localhost:9000/api/auth/login", {
+            const res = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),

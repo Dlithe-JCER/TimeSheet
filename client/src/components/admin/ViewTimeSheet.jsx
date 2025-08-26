@@ -9,14 +9,14 @@ function ViewTimeSheet() {
     const [selectedProject, setSelectedProject] = useState("");
     const [selectedMonth, setSelectedMonth] = useState("");
     const [selectedWeek, setSelectedWeek] = useState("");
-
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     // ✅ Fetch users and projects for dropdowns
     useEffect(() => {
-        fetch("http://localhost:9000/api/auth/users")
+        fetch(`${API_BASE_URL}/auth/users`)
             .then((res) => res.json())
             .then((data) => setUsers(data));
 
-        fetch("http://localhost:9000/api/projects/all")
+        fetch(`${API_BASE_URL}/projects/all`)
             .then((res) => res.json())
             .then((data) => setProjects(data));
     }, []);
@@ -52,10 +52,10 @@ function ViewTimeSheet() {
 
         if (selectedUser) {
             // Employee-specific logs
-            url = `http://localhost:9000/api/weeklylogs/user/${selectedUser}?`;
+            url = `${API_BASE_URL}/weeklylogs/user/${selectedUser}?`;
         } else {
             // Admin view - all logs
-            url = `http://localhost:9000/api/weeklylogs/all?`;
+            url = `${API_BASE_URL}/weeklylogs/all?`;
         }
 
         if (selectedWeek) url += `weekNumber=${selectedWeek}&`;

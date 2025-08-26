@@ -20,7 +20,7 @@ export default function TaskManager() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?._id;
   const token = localStorage.getItem("token");
-
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   // 🔹 Alerts
   const [alert, setAlert] = useState({ type: "", message: "" });
   const showAlert = (type, message) => {
@@ -74,13 +74,13 @@ export default function TaskManager() {
       setIsLoading(true);
       try {
         const [projRes, taskRes, logsRes] = await Promise.all([
-          axios.get("http://localhost:9000/api/projects/all", {
+          axios.get(`${API_BASE_URL}/projects/all`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:9000/api/tasktypes", {
+          axios.get(`${API_BASE_URL}/tasktypes`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`http://localhost:9000/api/weeklylogs/current/${userId}`, {
+          axios.get(`${API_BASE_URL}/weeklylogs/current/${userId}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -162,7 +162,7 @@ export default function TaskManager() {
 
       try {
         const logsRes = await axios.get(
-          `http://localhost:9000/api/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
+          `${API_BASE_URL}/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -196,7 +196,7 @@ export default function TaskManager() {
       return;
     }
     try {
-      await axios.delete(`http://localhost:9000/api/weeklylogs/${taskId}`, {
+      await axios.delete(`${API_BASE_URL}/weeklylogs/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks((prev) => prev.filter((task) => task.id !== taskId));
@@ -247,7 +247,7 @@ export default function TaskManager() {
       }));
 
       await axios.post(
-        "http://localhost:9000/api/weeklylogs/upsert-bulk",
+        `${API_BASE_URL}/weeklylogs/upsert-bulk`,
         { tasks: tasksToSave },
         {
           headers: {
@@ -258,7 +258,7 @@ export default function TaskManager() {
       );
 
       const logsRes = await axios.get(
-        `http://localhost:9000/api/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
+        `${API_BASE_URL}/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

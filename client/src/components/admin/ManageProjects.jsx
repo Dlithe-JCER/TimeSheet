@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { FolderKanban, PlusCircle, Trash2, CheckCircle } from "lucide-react";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;  // ✅ use env variable
 
 function ManageProjects() {
     const [projects, setProjects] = useState([]);
@@ -24,7 +25,7 @@ function ManageProjects() {
 
     const fetchProjects = async () => {
         try {
-            const res = await axios.get("http://localhost:9000/api/projects");
+            const res = await axios.get(`${API_BASE_URL}/projects`);
             setProjects(res.data);
         } catch (err) {
             console.error("Error fetching projects:", err);
@@ -40,7 +41,7 @@ function ManageProjects() {
     const handleAddProject = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:9000/api/projects", formData);
+            await axios.post(`${API_BASE_URL}/projects`, formData);
             setFormData({
                 name: "",
                 code: "",
@@ -58,7 +59,7 @@ function ManageProjects() {
     // Delete project
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:9000/api/projects/${id}`);
+            await axios.delete(`${API_BASE_URL}/projects/${id}`);
             fetchProjects();
         } catch (err) {
             console.error("Error deleting project:", err);
@@ -68,7 +69,7 @@ function ManageProjects() {
     // Mark project as done
     const handleMarkDone = async (id) => {
         try {
-            await axios.put(`http://localhost:9000/api/projects/${id}`, {
+            await axios.put(`${API_BASE_URL}/projects/${id}`, {
                 status: "done",
             });
             fetchProjects();
@@ -76,7 +77,6 @@ function ManageProjects() {
             console.error("Error updating project status:", err);
         }
     };
-
     return (
         <div className="min-h-screen bg-black text-white p-10">
             {/* Header */}
