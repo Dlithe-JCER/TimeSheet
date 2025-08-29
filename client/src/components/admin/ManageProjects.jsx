@@ -143,7 +143,7 @@ function ManageProjects() {
                                 value={formData.startDate}
                                 onChange={handleChange}
                                 className="bg-gray-800 border-gray-700 text-white"
-                                required
+
                             />
                         </div>
 
