@@ -1,12 +1,13 @@
 const Project = require("../models/Project");
 
+
 // ✅ Create a project
 exports.createProject = async (req, res) => {
     try {
         const { name, code, description, startDate, endDate, status } = req.body;
 
-        if (!name || !startDate) {
-            return res.status(400).json({ error: "Project name and startDate are required" });
+        if (!name) {   // ✅ only name is required now
+            return res.status(400).json({ error: "Project name is required" });
         }
 
         const project = new Project({
@@ -24,6 +25,7 @@ exports.createProject = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // ✅ Get only active projects (default dropdown for TaskManager)
 exports.getProjects = async (req, res) => {
