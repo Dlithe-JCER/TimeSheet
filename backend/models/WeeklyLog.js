@@ -10,7 +10,7 @@ const weeklyLogSchema = new mongoose.Schema(
         status: {
             type: String,
             enum: ["todo", "inprogress", "done"],
-            default: "todo",
+            default: "inprogress",
         },
         days: {
             mon: { type: Number, default: 0 },

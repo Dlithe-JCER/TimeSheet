@@ -12,15 +12,21 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:8000", // Frontend URL
+        credentials: true, // allow cookies if needed
+    })
+);
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose
+    .connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
     .then(() => console.log("✅ MongoDB connected"))
-    .catch(err => console.error("❌ MongoDB error:", err));
+    .catch((err) => console.error("❌ MongoDB error:", err));
 
 // Register Models
 require("./models/timeSheetUsers");
@@ -34,7 +40,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/users", authRoutes); // Assuming you want to use the same auth routes for user management
+app.use("/api/users", authRoutes); // Optional: remove if duplicate
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasktypes", taskTypeRoutes);
 app.use("/api/weeklylogs", weeklyLogRoutes);

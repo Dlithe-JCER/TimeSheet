@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import AlertMessage from "../AlertMessage";
 
 export default function TaskManager() {
@@ -17,10 +23,12 @@ export default function TaskManager() {
   const [currentWeek, setCurrentWeek] = useState("");
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [isLoading, setIsLoading] = useState(false);
+
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?._id;
   const token = localStorage.getItem("token");
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   // 🔹 Alerts
   const [alert, setAlert] = useState({ type: "", message: "" });
   const showAlert = (type, message) => {
@@ -30,7 +38,9 @@ export default function TaskManager() {
 
   // 🔹 Helper: Get ISO week number
   const getWeekNumber = (date) => {
-    const temp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const temp = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    );
     const dayNum = temp.getUTCDay() || 7;
     temp.setUTCDate(temp.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(temp.getUTCFullYear(), 0, 1));
@@ -85,15 +95,19 @@ export default function TaskManager() {
           }),
         ]);
 
-        setProjects(projRes.data);
-        setTaskTypes(taskRes.data);
+        // ✅ Sort projects & task types alphabetically
+        setProjects(projRes.data.sort((a, b) => a.name.localeCompare(b.name)));
+        setTaskTypes(taskRes.data.sort((a, b) => a.name.localeCompare(b.name)));
 
         const today = new Date();
         const weekNumber = getWeekNumber(today);
         setCurrentWeek(weekNumber);
         setCurrentYear(today.getFullYear());
 
-        const monthWeeks = getWeeksOfMonth(today.getFullYear(), today.getMonth());
+        const monthWeeks = getWeeksOfMonth(
+          today.getFullYear(),
+          today.getMonth()
+        );
         setWeeksOfMonth(monthWeeks);
 
         const currentWeekInMonth = monthWeeks.find(
@@ -108,14 +122,16 @@ export default function TaskManager() {
             week: log.weekNumber,
             projectId: log.projectId?._id || log.projectId,
             taskTypeId: log.taskTypeId?._id || log.taskTypeId,
-            status: log.status,
             days: log.days,
           }));
           setTasks(existingTasks);
         }
       } catch (err) {
         console.error("Error loading data:", err);
-        showAlert("error", "Error loading data. Please check console for details.");
+        showAlert(
+          "error",
+          "Error loading data. Please check console for details."
+        );
       } finally {
         setIsLoading(false);
       }
@@ -150,12 +166,12 @@ export default function TaskManager() {
         week: parseInt(selectedWeek),
         projectId: selectedProject,
         taskTypeId: selectedTaskType,
-        status: "todo",
         days: { mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0, sun: 0 },
       },
     ]);
   };
-  // Fetch logs whenever selectedWeek changes
+
+  // 🔹 Fetch logs whenever selectedWeek changes
   useEffect(() => {
     const fetchLogsForWeek = async () => {
       if (!userId || !token || !selectedWeek) return;
@@ -174,7 +190,6 @@ export default function TaskManager() {
             week: log.weekNumber,
             projectId: log.projectId?._id || log.projectId,
             taskTypeId: log.taskTypeId?._id || log.taskTypeId,
-            status: log.status,
             days: log.days,
           }));
           setTasks(updatedTasks);
@@ -217,14 +232,6 @@ export default function TaskManager() {
     );
   };
 
-  const handleStatusChange = (taskId, value) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, status: value } : task
-      )
-    );
-  };
-
   const handleSave = async () => {
     if (!user || !user._id) {
       showAlert("error", "User not found. Please login again.");
@@ -242,7 +249,6 @@ export default function TaskManager() {
         taskTypeId: task.taskTypeId,
         weekNumber: parseInt(task.week),
         isoYear: currentYear,
-        status: task.status,
         days: task.days,
       }));
 
@@ -270,7 +276,6 @@ export default function TaskManager() {
           week: log.weekNumber,
           projectId: log.projectId?._id || log.projectId,
           taskTypeId: log.taskTypeId?._id || log.taskTypeId,
-          status: log.status,
           days: log.days,
         }));
         setTasks(updatedTasks);
@@ -379,7 +384,6 @@ export default function TaskManager() {
             <TableRow>
               <TableHead className="text-white">Project</TableHead>
               <TableHead className="text-white">Task</TableHead>
-              <TableHead className="text-white">Status</TableHead>
               {["mon", "tue", "wed", "thu", "fri", "sat", "sun"].map((d) => (
                 <TableHead key={d} className="text-white text-center">
                   {d.toUpperCase()}
@@ -394,7 +398,10 @@ export default function TaskManager() {
             {tasks
               .filter((task) => task.week === parseInt(selectedWeek))
               .map((task) => {
-                const total = Object.values(task.days).reduce((a, b) => a + b, 0);
+                const total = Object.values(task.days).reduce(
+                  (a, b) => a + b,
+                  0
+                );
                 const isEditable = parseInt(selectedWeek) === currentWeek;
                 const projectName = getProjectName(task.projectId);
                 const taskTypeName = getTaskTypeName(task.taskTypeId);
@@ -408,33 +415,6 @@ export default function TaskManager() {
                   >
                     <TableCell>{projectName}</TableCell>
                     <TableCell>{taskTypeName}</TableCell>
-
-                    {/* Status */}
-                    <TableCell>
-                      {isEditable ? (
-                        <Select
-                          value={task.status}
-                          onValueChange={(val) =>
-                            handleStatusChange(task.id, val)
-                          }
-                        >
-                          <SelectTrigger className="bg-black text-white border-gray-700 rounded-xl">
-                            <SelectValue placeholder="Select Status" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-gray-800 text-white">
-                            <SelectItem value="todo">📝 Todo</SelectItem>
-                            <SelectItem value="inprogress">
-                              ⏳ In Progress
-                            </SelectItem>
-                            <SelectItem value="done">✅ Done</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <span className="px-3 py-1 rounded-full bg-gray-700">
-                          {task.status}
-                        </span>
-                      )}
-                    </TableCell>
 
                     {Object.keys(task.days).map((day) => (
                       <TableCell key={day} className="text-center">
