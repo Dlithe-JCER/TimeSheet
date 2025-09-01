@@ -1,11 +1,11 @@
-# ⏱ Timesheet Management System (MERN Stack)
+# Timesheet Management System (MERN Stack)
 
 A full-stack **Timesheet Management System** built with the **MERN stack (MongoDB, Express, React, Node.js)**.  
 It allows employees to log weekly working hours on different projects, and admins/managers to view, filter, and analyze timesheets.
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Authentication & Authorization**
   - User login (Admin, Manager, Employee roles).
@@ -26,7 +26,7 @@ It allows employees to log weekly working hours on different projects, and admin
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 - React (Vite)
@@ -45,7 +45,7 @@ It allows employees to log weekly working hours on different projects, and admin
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 timesheet-app/<br/>
 │
@@ -70,32 +70,32 @@ timesheet-app/<br/>
 
 ---
 
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
-### 1️⃣ Clone the repo
+### 1 Clone the repo
 ```bash
 git clone https://github.com/yourusername/timesheet-app.git
 cd timesheet-app
 ```
 
-### 2️⃣ Backend Setup
+### 2 Backend Setup
 ```bash 
 cd backend
 npm install
 ```
 
-### 3️⃣ Configure Environment Variables
+### 3 Configure Environment Variables
 Create a `.env` file in the `backend` directory and add your MongoDB connection string and other environment variables:
 ``` bash
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-PORT=5000
+PORT=9000
 ```
-### 4️⃣ Start the Backend Server
+### 4 Start the Backend Server
 ```bash
 nodemon server.js
 ```
-### 5️⃣ Frontend Setup
+### 5 Frontend Setup
 ```bash
 cd frontend
 npm install
@@ -104,5 +104,5 @@ npm run dev
 ### Environment Variables
 Create a `.env` file in the `frontend` directory and add:
 ```bash
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:9000/api
 ```
