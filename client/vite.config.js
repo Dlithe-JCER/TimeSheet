@@ -11,8 +11,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    port: 8000, // 👈 change this to the port you want
-    host: "0.0.0.0", // optional: allows access from mobile devices in same network
-  },
+  // server: {
+  //   port: 8000, // 👈 change this to the port you want
+  //   host: "0.0.0.0", // optional: allows access from mobile devices in same network
+  // },
 })

@@ -14,11 +14,13 @@ function ViewTimeSheet() {
     useEffect(() => {
         fetch(`${API_BASE_URL}/auth/users`)
             .then((res) => res.json())
-            .then((data) => setUsers(data));
+            .then((data) => setUsers(data))
+            .catch((err) => console.error("Error fetching users:", err));
 
         fetch(`${API_BASE_URL}/projects/all`)
             .then((res) => res.json())
-            .then((data) => setProjects(data));
+            .then((data) => setProjects(data))
+            .catch((err) => console.error("Error fetching projects:", err));
     }, []);
 
     // ✅ Helper: get weeks of a month
@@ -49,25 +51,40 @@ function ViewTimeSheet() {
     // ✅ Fetch logs when filters are applied
     const fetchLogs = () => {
         let url = "";
+        const params = new URLSearchParams();
 
         if (selectedUser) {
             // Employee-specific logs
-            url = `${API_BASE_URL}/weeklylogs/user/${selectedUser}?`;
+            url = `${API_BASE_URL}/weeklylogs/user/${selectedUser}`;
         } else {
             // Admin view - all logs
-            url = `${API_BASE_URL}/weeklylogs/all?`;
+            url = `${API_BASE_URL}/weeklylogs/all`;
         }
 
-        if (selectedWeek) url += `weekNumber=${selectedWeek}&`;
-        if (selectedMonth) url += `isoYear=${new Date().getFullYear()}&`;
+        // Add query parameters
+        if (selectedWeek) params.append('weekNumber', selectedWeek);
+        if (selectedMonth !== "") params.append('isoYear', new Date().getFullYear());
+
+        const queryString = params.toString();
+        if (queryString) url += `?${queryString}`;
+
+        console.log("Fetching logs from:", url); // Debug log
 
         fetch(url)
-            .then((res) => res.json())
+            .then((res) => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
             .then((data) => {
+                console.log("Fetched data:", data); // Debug log
                 const filtered = selectedProject
                     ? data.filter((log) => log.projectId?._id === selectedProject)
                     : data;
                 setLogs(filtered);
+            })
+            .catch((err) => {
+                console.error("Error fetching logs:", err);
+                setLogs([]);
             });
     };
 

@@ -26,6 +26,57 @@ exports.createProject = async (req, res) => {
     }
 };
 
+// ✅ Bulk create projects
+exports.bulkCreateProjects = async (req, res) => {
+    try {
+        const { projects } = req.body;
+
+        // Validate input
+        if (!projects || !Array.isArray(projects) || projects.length === 0) {
+            return res.status(400).json({
+                error: "Projects array is required and must not be empty"
+            });
+        }
+
+        // Validate each project has a name
+        const invalidProjects = projects.filter(p => !p.name);
+        if (invalidProjects.length > 0) {
+            return res.status(400).json({
+                error: "All projects must have a name field"
+            });
+        }
+
+        // Add default status if not provided
+        const projectsToCreate = projects.map(project => ({
+            ...project,
+            status: project.status || "active"
+        }));
+
+        // Insert multiple projects
+        const createdProjects = await Project.insertMany(projectsToCreate, {
+            ordered: false // Continue inserting even if some fail
+        });
+
+        res.status(201).json({
+            message: `Successfully created ${createdProjects.length} project(s)`,
+            count: createdProjects.length,
+            projects: createdProjects
+        });
+    } catch (err) {
+        // Handle duplicate key errors or other validation errors
+        if (err.name === 'BulkWriteError') {
+            const successCount = err.insertedDocs ? err.insertedDocs.length : 0;
+            return res.status(207).json({
+                message: `Partially successful: ${successCount} project(s) created`,
+                count: successCount,
+                projects: err.insertedDocs || [],
+                errors: err.writeErrors || []
+            });
+        }
+        res.status(500).json({ error: err.message });
+    }
+};
+
 
 // ✅ Get only active projects (default dropdown for TaskManager)
 exports.getProjects = async (req, res) => {
