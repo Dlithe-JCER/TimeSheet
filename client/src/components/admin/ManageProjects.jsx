@@ -25,7 +25,7 @@ function ManageProjects() {
 
     const fetchProjects = async () => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/projects`);
+            const res = await axios.get(`${API_BASE_URL}/api/projects`);
             setProjects(res.data);
         } catch (err) {
             console.error("Error fetching projects:", err);
@@ -41,7 +41,7 @@ function ManageProjects() {
     const handleAddProject = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${API_BASE_URL}/projects`, formData);
+            await axios.post(`${API_BASE_URL}/api/projects`, formData);
             setFormData({
                 name: "",
                 code: "",
@@ -59,7 +59,7 @@ function ManageProjects() {
     // Delete project
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`${API_BASE_URL}/projects/${id}`);
+            await axios.delete(`${API_BASE_URL}/api/projects/${id}`);
             fetchProjects();
         } catch (err) {
             console.error("Error deleting project:", err);
@@ -69,7 +69,7 @@ function ManageProjects() {
     // Mark project as done
     const handleMarkDone = async (id) => {
         try {
-            await axios.put(`${API_BASE_URL}/projects/${id}`, {
+            await axios.put(`${API_BASE_URL}/api/projects/${id}`, {
                 status: "done",
             });
             fetchProjects();

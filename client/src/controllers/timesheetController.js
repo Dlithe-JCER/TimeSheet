@@ -1,5 +1,6 @@
 import axios from "axios";
-const API_URL = "http://localhost:5000/api/timesheet";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${API_BASE_URL}/api/timesheet`;
 
 export const getTimesheet = async (employeeName, month, year) => {
     const res = await axios.get(`${API_URL}?employeeName=${employeeName}&month=${month}&year=${year}`);

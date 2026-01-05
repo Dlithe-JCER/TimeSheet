@@ -84,13 +84,13 @@ export default function TaskManager() {
       setIsLoading(true);
       try {
         const [projRes, taskRes, logsRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/projects/all`, {
+          axios.get(`${API_BASE_URL}/api/projects/all`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${API_BASE_URL}/tasktypes`, {
+          axios.get(`${API_BASE_URL}/api/tasktypes`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${API_BASE_URL}/weeklylogs/current/${userId}`, {
+          axios.get(`${API_BASE_URL}/api/weeklylogs/current/${userId}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -178,7 +178,7 @@ export default function TaskManager() {
 
       try {
         const logsRes = await axios.get(
-          `${API_BASE_URL}/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
+          `${API_BASE_URL}/api/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -211,7 +211,7 @@ export default function TaskManager() {
       return;
     }
     try {
-      await axios.delete(`${API_BASE_URL}/weeklylogs/${taskId}`, {
+      await axios.delete(`${API_BASE_URL}/api/weeklylogs/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks((prev) => prev.filter((task) => task.id !== taskId));
@@ -253,7 +253,7 @@ export default function TaskManager() {
       }));
 
       await axios.post(
-        `${API_BASE_URL}/weeklylogs/upsert-bulk`,
+        `${API_BASE_URL}/api/weeklylogs/upsert-bulk`,
         { tasks: tasksToSave },
         {
           headers: {
@@ -264,7 +264,7 @@ export default function TaskManager() {
       );
 
       const logsRes = await axios.get(
-        `${API_BASE_URL}/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
+        `${API_BASE_URL}/api/weeklylogs/user/${userId}?isoYear=${currentYear}&weekNumber=${selectedWeek}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

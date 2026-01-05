@@ -12,12 +12,12 @@ function ViewTimeSheet() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     // ✅ Fetch users and projects for dropdowns
     useEffect(() => {
-        fetch(`${API_BASE_URL}/auth/users`)
+        fetch(`${API_BASE_URL}/api/auth/users`)
             .then((res) => res.json())
             .then((data) => setUsers(data))
             .catch((err) => console.error("Error fetching users:", err));
 
-        fetch(`${API_BASE_URL}/projects/all`)
+        fetch(`${API_BASE_URL}/api/projects/all`)
             .then((res) => res.json())
             .then((data) => setProjects(data))
             .catch((err) => console.error("Error fetching projects:", err));
@@ -55,10 +55,10 @@ function ViewTimeSheet() {
 
         if (selectedUser) {
             // Employee-specific logs
-            url = `${API_BASE_URL}/weeklylogs/user/${selectedUser}`;
+            url = `${API_BASE_URL}/api/weeklylogs/user/${selectedUser}`;
         } else {
             // Admin view - all logs
-            url = `${API_BASE_URL}/weeklylogs/all`;
+            url = `${API_BASE_URL}/api/weeklylogs/all`;
         }
 
         // Add query parameters
