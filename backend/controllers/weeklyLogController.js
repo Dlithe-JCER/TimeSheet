@@ -114,8 +114,18 @@ exports.upsertWeeklyLogsBulk = async (req, res) => {
         const results = [];
         const bulkOperations = [];
 
+        const today = new Date();
+        const currentWeekNum = getWeekNumber(today);
+        const currentYearNum = today.getFullYear();
+
         for (const taskData of tasks) {
             const { userId, projectId, taskTypeId, weekNumber, isoYear, days, status } = taskData;
+
+            // 🔹 Change: Lock previous weeks for upserting
+            if (isoYear < currentYearNum || (isoYear === currentYearNum && weekNumber < currentWeekNum)) {
+                results.push({ error: "Cannot modify logs from previous weeks", task: taskData });
+                continue;
+            }
 
             // Validate required fields
             if (!userId || !projectId || !taskTypeId || !weekNumber || !isoYear) {
@@ -232,10 +242,21 @@ exports.deleteWeeklyLog = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const log = await WeeklyLog.findByIdAndDelete(id);
-        if (!log) {
+        // 🔹 Change: Lock previous weeks for deletion
+        const logToDelete = await WeeklyLog.findById(id);
+        if (!logToDelete) {
             return res.status(404).json({ message: "Weekly log not found" });
         }
+
+        const today = new Date();
+        const currentWeek = getWeekNumber(today);
+        const currentYear = today.getFullYear();
+
+        if (logToDelete.isoYear < currentYear || (logToDelete.isoYear === currentYear && logToDelete.weekNumber < currentWeek)) {
+            return res.status(403).json({ message: "Cannot delete logs from previous weeks" });
+        }
+
+        await WeeklyLog.findByIdAndDelete(id);
 
         res.json({ message: "Weekly log deleted successfully" });
     } catch (err) {

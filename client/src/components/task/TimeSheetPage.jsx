@@ -359,7 +359,8 @@ export default function TaskManager() {
         <Button
           onClick={handleAddTask}
           className="bg-blue-600 hover:bg-blue-700"
-          disabled={!selectedProject || !selectedTaskType || !selectedWeek}
+          // 🔹 Change: Allow adding tasks for current and future weeks
+          disabled={!selectedProject || !selectedTaskType || !selectedWeek || parseInt(selectedWeek) < currentWeek}
         >
           Add Task
         </Button>
@@ -367,10 +368,11 @@ export default function TaskManager() {
         <Button
           onClick={handleSave}
           className="bg-green-600 hover:bg-green-700"
+          // 🔹 Change: Allow saving tasks for current and future weeks
           disabled={
             tasks.length === 0 ||
             isLoading ||
-            parseInt(selectedWeek) !== currentWeek
+            parseInt(selectedWeek) < currentWeek
           }
         >
           {isLoading ? "Saving..." : "Save All"}
@@ -402,7 +404,12 @@ export default function TaskManager() {
                   (a, b) => a + b,
                   0
                 );
-                const isEditable = parseInt(selectedWeek) === currentWeek;
+                // 🔹 Change: Hours editable only for current week, removable for current and future weeks
+                const isCurrentWeek = parseInt(selectedWeek) === currentWeek;
+                const isFutureWeek = parseInt(selectedWeek) > currentWeek;
+                const isHoursEditable = isCurrentWeek;
+                const isRemovable = isCurrentWeek || isFutureWeek;
+
                 const projectName = getProjectName(task.projectId);
                 const taskTypeName = getTaskTypeName(task.taskTypeId);
 
@@ -410,7 +417,7 @@ export default function TaskManager() {
                   <TableRow
                     key={task.id}
                     className={
-                      isEditable ? "border-l-4 border-green-500" : "opacity-60"
+                      isCurrentWeek ? "border-l-4 border-green-500" : "opacity-60"
                     }
                   >
                     <TableCell>{projectName}</TableCell>
@@ -418,7 +425,8 @@ export default function TaskManager() {
 
                     {Object.keys(task.days).map((day) => (
                       <TableCell key={day} className="text-center">
-                        {isEditable ? (
+                        {/* 🔹 Change: Use isHoursEditable for the input field */}
+                        {isHoursEditable ? (
                           <Input
                             type="number"
                             min="0"
@@ -442,7 +450,8 @@ export default function TaskManager() {
                     </TableCell>
 
                     <TableCell className="text-center">
-                      {isEditable ? (
+                      {/* 🔹 Change: Use isRemovable for the remove button */}
+                      {isRemovable ? (
                         <Button
                           onClick={() => handleRemoveTask(task.id)}
                           className="bg-red-600 hover:bg-red-700 text-white p-1 text-xs"
@@ -469,8 +478,10 @@ export default function TaskManager() {
 
       {tasks.length > 0 && (
         <div className="mt-4 text-sm text-gray-400">
-          <p>💡 Only the current week (Week {currentWeek}) is editable.</p>
-          <p>💡 Other weeks are locked for viewing.</p>
+          {/* 🔹 Change: Clear instructions about editing and removal */}
+          <p>💡 Tasks can be added and removed for current and future weeks.</p>
+          <p>💡 Hours are only editable for the current week (Week {currentWeek}).</p>
+          <p>💡 Previous weeks are locked for viewing.</p>
         </div>
       )}
     </div>
